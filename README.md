@@ -1,12 +1,10 @@
-[Lxirxus](https://github.com)/README.md
-
 # 💫 Profile: Lucius
 
-![Banner](https://github.com)
+[![Banner](https://github.com)](https://github.com/LuciusWellejus)
 
-[![Views](https://komarev.com)](https://github.com)
-[![Followers](https://shields.io)](https://github.com?tab=followers)
-[![Following](https://shields.io)](https://github.com?tab=following)
+[![Views](https://komarev.com)](https://github.com/LuciusWellejus)
+[![Followers](https://shields.io)](https://github.com/LuciusWellejus?tab=followers)
+[![Following](https://shields.io)](https://github.com/LuciusWellejus?tab=following)
 
 **Current Status:** Software Engineering student at the University of Southern Denmark (SDU), actively developing my programming and engineering skills.
 
