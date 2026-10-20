@@ -1,12 +1,12 @@
-[Lxirxus](https://github.com/LuciusWellejus)/README.md
-
-![Banner](https://github.com/LuciusWellejus/Lxirxus/blob/main/girl_ame_13.gif?raw=true)
+[Lxirxus](https://github.com)/README.md
 
 # 💫 Profile: Lucius
 
-[![Views](https://komarev.com)](https://github.com/LuciusWellejus)
-[![Followers](https://shields.io)](https://github.com/LuciusWellejus?tab=followers)
-[![Following](https://shields.io)](https://github.com/LuciusWellejus?tab=following)
+![Banner](https://github.com)
+
+[![Views](https://komarev.com)](https://github.com)
+[![Followers](https://shields.io)](https://github.com?tab=followers)
+[![Following](https://shields.io)](https://github.com?tab=following)
 
 **Current Status:** Software Engineering student at the University of Southern Denmark (SDU), actively developing my programming and engineering skills.
 
@@ -16,4 +16,3 @@
 
 **Interests:** Passionate about Data Science, AI/ML, Automation, and Software Development/Engineering.
 
-<br clear="left"/>
