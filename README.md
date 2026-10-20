@@ -1,6 +1,4 @@
 Lxirxus/README.md
-<img align="left" width="300" src="https://github.com/LuciusWellejus/Lxirxus/blob/main/girl_ame_13.gif?raw=true" />
-
 # 💫 Profile: Lucius
 
 ![Banner](https://github.com/LuciusWellejus/Lxirxus/blob/main/girl_ame_13.gif?raw=true)
