@@ -8,7 +8,7 @@ Lxirxus/README.md
 [![Followers](https://shields.io)](https://github.com/LuciusWellejus?tab=followers)
 [![Following](https://shields.io)](https://github.com/LuciusWellejus?tab=following)
 
-<video align="left" width="300" src="https://githubusercontent.com" autoplay loop muted playsinline></video>
+<video align="left" width="300" src="[https://githubusercontent.com](https://github.com/LuciusWellejus/blob/main/girl_ame_13.mp4?raw=true)" autoplay loop muted playsinline></video>
 
 **Current Status:** Software Engineering student at the University of Southern Denmark (SDU), actively developing my programming and engineering skills.
 
