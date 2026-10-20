@@ -1,2 +1,11 @@
 Github_Profile
-Github_Profile
+
+# Profile: Lucius
+
+Current Status: Software Engineering student at the University of Southern Denmark (SDU), actively developing my programming and engineering skills.
+
+Experience:
+
+Tech Stack: Core skills in programming languages and data tools such as C#, Python, and Rust.
+
+Interests: Passionate about Data Science, AI/ML, Automation, and Software Development/Engineering.
