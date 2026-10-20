@@ -1,4 +1,4 @@
-[View Profile README](https://github.com/LuciusWellejus)/README.md
+[Lxirxus](https://github.com/LuciusWellejus)/README.md
 
 ![Banner](https://github.com/LuciusWellejus/Lxirxus/blob/main/girl_ame_13.gif?raw=true)
 
