@@ -1,6 +1,7 @@
 # 💫 Profile: Lucius
 
 ![Banner](https://github.com/LuciusWellejus/LuciusWellejus/blob/main/girl_ame_13.gif?raw=true)
+Banner: girl ame 13 by akiame{秋雨}
 
 [![Views](https://komarev.com)](https://github.com/LuciusWellejus)
 [![Followers](https://shields.io)](https://github.com/LuciusWellejus?tab=followers)
