@@ -1,6 +1,6 @@
 # 💫 Profile: Lucius
 
-[![Banner](https://github.com)](https://github.com/LuciusWellejus)
+![Banner](https://githubusercontent.com)
 
 [![Views](https://komarev.com)](https://github.com/LuciusWellejus)
 [![Followers](https://shields.io)](https://github.com/LuciusWellejus?tab=followers)
