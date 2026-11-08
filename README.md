@@ -5,7 +5,7 @@
 Banner: girl ame 13 by akiame{秋雨}
 -->
 
-![Banner](ascii_banners/gifs/saturn.gif)
+![Banner](ascii_banners/gifs/cosmic_waves)
 ==================================================
               ASCII MATH SHADER v1.0              
         Real-time Vector Projection Engine
