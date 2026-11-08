@@ -52,7 +52,8 @@ def get_dynamic_logo_mask(logo_text, t):
         for i in range(5):
             combined_rows[i] += bitmap[i] + "0"
             
-    text_w = len(combined_rows)
+    # Længden af den første streng måler den fulde pixel-bredde af teksten
+    text_w = len(combined_rows[0])
     text_h = 5
     scale_x, scale_y = 3, 3
     
@@ -61,6 +62,7 @@ def get_dynamic_logo_mask(logo_text, t):
     
     for c_pix in range(text_w):
         current_global_col = start_x + c_pix * scale_x
+        # Udregner en flot flydende bølge-offset for hver kolonne
         wave_offset = int(5.0 * np.sin(current_global_col * 0.15 - t * 2.0))
         
         for r_pix in range(text_h):
