@@ -2,62 +2,83 @@ import numpy as np
 from math import pi
 
 def nuclear_reactor_style(x_grid, y_grid, t):
-    """Nyt design: Atomreaktor med grøn røg, partikler og et radioaktivt symbol på tårnet."""
+    """
+    Avanceret matematisk atomreaktor.
+    Tårnet er skubbet helt ned i bunden af banneret, så røgen stiger opad.
+    """
     ROWS, COLS = x_grid.shape
     
-    # Juster akserne (tårnet placeres lavt i midten)
-    a = x_grid / 20.0
-    b = (y_grid + 8) / 10.0  # Skub tårnets bund nedad
+    # Skaler koordinater så motoren fylder hele banner-skærmen flot ud
+    a = x_grid / 28.0
+    # RETTELSE: Ændret til -6 for at tvinge tårnet helt ned i bunden af skærmen
+    b = (y_grid - 6) / 14.0  
     
     light = np.zeros((ROWS, COLS))
     
-    # --- 1. BYGNING: KØLETÅRNETS SILHUET ---
-    # Klassisk hyperbolsk tårnform (bred bund, smallere talje, bred top)
-    tower_width = 0.5 + 0.4 * (b - 0.2) ** 2
-    # Begræns tårnet i højden (b skal være mellem bund og toppen af skorstenen)
-    tower_mask = (b > -0.8) & (b < 1.2) & (np.abs(a) < tower_width)
-    light[tower_mask] = 0.45
+    # --- 1. DET TREDIMENSIONELLE KØLETÅRN ---
+    # Hyperbolsk kurve til tårn-profilen (smuk organisk indsnævring)
+    tower_curve = 0.48 + 0.35 * (b - 0.1) ** 2
+    dist_to_surface = np.abs(a) - tower_curve
     
-    # --- 2. DET RADIOAKTIVE SYMBOL PÅ TÅRNET ---
-    # Centreret på tårnet
-    sa = a / 0.35
-    sb = (b - 0.1) / 0.35
+    # Skab en knivskarp men anti-aliaset kant på tårnet (mellem bund b=-0.8 og top b=1.0)
+    in_tower = (b > -0.8) & (b < 1.0) & (dist_to_surface < 0)
+    
+    # Brug np.clip til at forhindre negative tal under kvadratroden (** 0.5)
+    inner_val = np.clip(1.0 - (a / tower_curve) ** 2, 0.0, 1.0)
+    
+    # 3D Skyggelægning: Giv tårnet volumetrisk dybde og lysindfald (venstre-mod-højre gradient)
+    tower_shading = 0.35 + 0.55 * (inner_val ** 0.5) - (a / 3.0)
+    light[in_tower] = tower_shading[in_tower]
+    
+    # --- 2. DET RADIOAKTIVE SYMBOL (INTEGRERET PÅ OVERFLADEN) ---
+    # Polære koordinater centreret midt på tårnet
+    sa = a / 0.22
+    sb = (b - 0.1) / 0.22
     sr = (sa ** 2 + sb ** 2) ** 0.5
     s_angle = np.arctan2(sb, sa)
     
-    if np.any(tower_mask):
-        # Lille indre cirkel
-        center_circle = (sr < 0.25)
-        # De tre faneblade (blade) i symbolet med 60 graders mellemrum
-        blades = (sr >= 0.35) & (sr < 1.0) & (
-            ((s_angle > -pi/6) & (s_angle < pi/6)) |
-            ((s_angle > 5*pi/6) | (s_angle < -5*pi/6)) |
-            ((s_angle > -pi + pi/6) & (s_angle < -pi/2)) | 
-            ((s_angle > pi/2 - pi/6) & (s_angle < pi/2 + pi/6))
-        )
-        # Maskér det præcist over tårnets overflade
-        symbol_zone = tower_mask & (center_circle | blades)
-        light[symbol_zone] = 0.95
+    # De tre faneblade (blade) og centrum defineres matematisk
+    center_disk = (sr < 0.22)
+    blades = (sr >= 0.38) & (sr < 0.95) & (
+        ((s_angle > -pi/6) & (s_angle < pi/6)) |
+        ((s_angle > 5*pi/6) | (s_angle < -5*pi/6)) |
+        ((s_angle > -pi + pi/6) & (s_angle < -pi/2)) | 
+        ((s_angle > pi/2 - pi/6) & (s_angle < pi/2 + pi/6))
+    )
+    
+    # Brænd symbolet ind i tårnets overflade med intens lysstyrke
+    symbol_mask = in_tower & (center_disk | blades)
+    light[symbol_mask] = 0.98
+    
+    # --- 3. SMUK, ORGANISK RØG OG EMISSIONER (FYLDER SKÆRMEN) ---
+    # Røg-feltet starter ved tårnets top (b = -0.8) og flyder opad
+    smoke_height = -0.8 - b
+    
+    # Skab en sinus-interferens bølge, der driver langsomt opad (t * 1.5 i stedet for 4.0)
+    smoke_wave = a + 0.4 * np.sin(smoke_height * 2.5 - t * 1.5) + 0.15 * np.cos(a * 4.0 + t)
+    # Røgskyen spreder sig gradvist ud og fylder skærmen
+    smoke_envelope = 0.35 + smoke_height * 0.45
+    
+    smoke_field = (b <= -0.8) & (np.abs(smoke_wave) < smoke_envelope)
+    
+    if np.any(smoke_field):
+        # Flot turbulent tekstur inde i røgen ved at blande to sinusbølger over tid
+        smoke_texture = 0.35 + 0.45 * np.sin(smoke_height[smoke_field] * 5.0 + t * 2.0) * np.cos(a[smoke_field] * 3.0 - t)
+        # Fade røgen blødt ud i toppen af skærmen, så den ikke klipper råt
+        smoke_fade = np.clip(1.5 - smoke_height[smoke_field] * 0.4, 0.0, 1.0)
         
-    # --- 3. GRØN RØG OG GASEMISSIONER ---
-    # Røgen starter over tårnets top (b <= -0.8)
-    smoke_y = b + 0.8
-    
-    # Røgen spreder sig ud og driver opad som en sinuskurve over tid (t)
-    smoke_wave = a + 0.3 * np.sin(smoke_y * 3.0 - t * 4.0)
-    smoke_spread = 0.4 - smoke_y * 0.25  # Spreder sig mere ud jo højere op den kommer
-    
-    # RETTELSE: Vi bygger en ren, samlet 2D boolean maske for hele røgskyen
-    full_smoke_mask = (b <= -0.8) & (np.abs(smoke_wave) < smoke_spread) & (smoke_y > -2.0)
-    
-    # Nu tildeles værdierne fejlfrit i 2D
-    light[full_smoke_mask] = 0.65 + 0.25 * np.sin(smoke_y[full_smoke_mask] * 6.0 + t * 5.0)
+        # Læg røgen ovenpå baggrunden
+        light[smoke_field] = np.maximum(light[smoke_field], smoke_texture * smoke_fade)
         
-    # --- 4. RADIOAKTIVE PARTIKLER (FLIMRENDE GNISTER) ---
-    # Abstrakte partikler der skydes op i luften over tårnet
-    particle_wave = np.sin(x_grid * 0.8 + t * 6.0) * np.cos(y_grid * 0.5 - t * 4.0)
-    particle_zone = (b <= -0.6) & (np.abs(a) < 1.8) & (particle_wave > 0.78)
-    light[particle_zone] = 0.99
+    # --- 4. LANGSOMME, SVÆVENDE ATMOSFÆRISKE PARTIKLER ---
+    # Gør hastigheden meget langsommere (f.eks. t * 0.8 og t * 0.5)
+    # Dette skaber store, bløde, svævende glødepartikler i luften
+    particle_grid = np.sin(x_grid * 0.25 - t * 0.8) * np.cos(y_grid * 0.35 + t * 0.5)
     
-    # Strålende radioaktiv grøn farveprofil (R=10%, G=100%, B=20%)
-    return light, (0.10, 1.0, 0.20)
+    # Partiklerne svæver over det meste af skærmen for at fylde tomrummet ud
+    particle_mask = (b < 0.6) & (particle_grid > 0.88)
+    # Lad partiklerne blinke/pulse roligt frem og tilbage
+    light[particle_mask] = np.maximum(light[particle_mask], 0.4 + 0.55 * np.sin(x_grid[particle_mask] + t))
+    
+    # Strålende, levende radioaktiv grøn farveprofil (R=15%, G=100%, B=25%)
+    return light, (0.15, 1.0, 0.25)
