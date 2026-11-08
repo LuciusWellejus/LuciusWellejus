@@ -57,22 +57,17 @@ def get_dynamic_logo_mask(logo_text, t):
     scale_x, scale_y = 3, 3
     
     start_x = (COLS - (text_w * scale_x)) // 2
-    # Standard midte, som vi derefter bølger ud fra
     base_start_y = (ROWS - (text_h * scale_y)) // 2
     
     for c_pix in range(text_w):
-        # NYT: Udregn en unik bølge-forskydning for hver eneste pixel-kolonne i navnet.
-        # Dette får bogstaverne til at bølge uafhængigt som en slange hen over skærmen!
         current_global_col = start_x + c_pix * scale_x
         wave_offset = int(5.0 * np.sin(current_global_col * 0.15 - t * 2.0))
         
         for r_pix in range(text_h):
             if combined_rows[r_pix][c_pix] == '1':
-                # Tilføj bølge-forskydningen til den lodrette placering
                 y_pos = base_start_y + r_pix * scale_y + wave_offset
                 x_pos = current_global_col
                 
-                # Sørg for at vi ikke tegner uden for skærmens kant
                 if 0 <= y_pos < ROWS - scale_y and 0 <= x_pos < COLS - scale_x:
                     mask[y_pos:y_pos+scale_y, x_pos:x_pos+scale_x] = True
                 
@@ -99,18 +94,15 @@ def render_ascii_banner(style_function, filename, logo_text=None):
     for f in range(FRAMES):
         t = f * (2.0 * pi / FRAMES)
         
-        # NYT: Vi henter en NY, opdateret bølge-logo-maske for HVER ENESTE ramme (frame)
         logo_mask = get_dynamic_logo_mask(logo_text, t)
         
         light_matrix, rgb_ratios = style_function(x_grid, y_grid, t)
         r_ratio, g_ratio, b_ratio = rgb_ratios
         
-        # Udregn placeringen af den lodrette scanningslinje
         scan_progress = f / FRAMES
         scan_col = int(scan_progress * COLS)
         scan_mask = (x_idx >= scan_col - 1) & (x_idx <= scan_col + 1)
         
-        # Tving logo-bølgen helt frem i forgrunden med maksimal tegnstyrke
         if logo_text:
             light_matrix[logo_mask] = 0.99
         
@@ -128,7 +120,6 @@ def render_ascii_banner(style_function, filename, logo_text=None):
                 
                 r_c, g_c, b_c = r_ratio, g_ratio, b_ratio
                 
-                # Hvis scanningslinjen krydser det bølgende bogstav, skifter det til hvidt
                 if logo_text and logo_mask[row, col] and scan_mask[row, col]:
                     color = (val, val, val)
                 else:
@@ -144,8 +135,9 @@ def render_ascii_banner(style_function, filename, logo_text=None):
 
     output_path = os.path.join(GIF_DIR, f"{filename}.gif")
     
+    # RETTELSE: Gemmer korrekt ud fra det første element i listen
     if frames_list:
-        frames_list.save(
+        frames_list[0].save(
             output_path, 
             save_all=True, 
             append_images=frames_list[1:], 
