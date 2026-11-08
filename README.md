@@ -10,7 +10,6 @@ Banner: girl ame 13 by akiame{秋雨}
               ASCII MATH SHADER v1.0              
         Real-time Vector Projection Engine
         Dato: 2026-11-08 | System status: ONLINE
-==================================================
 
 
 [![Followers](https://shields.io)](https://github.com/LuciusWellejus?tab=followers)
