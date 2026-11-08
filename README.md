@@ -18,6 +18,8 @@ Banner: girl ame 13 by akiame{秋雨}
 **Current Status:** Software Engineering student at the University of Southern Denmark (SDU), actively developing my programming and engineering skills.
 
 **Experience:** 
+- Software Engineering Student at SDU (University of Southern Denmark)
+- Developing high-performance ASCII graphics tools & custom vector render pipelines
 
 **Tech Stack:** Core skills in programming languages and data tools such as C#, Python, and Rust.
 
