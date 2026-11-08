@@ -1,7 +1,10 @@
 # 💫 Profile: Lucius
 
-![Banner](https://github.com/LuciusWellejus/LuciusWellejus/blob/main/girl_ame_13.gif?raw=true)
-Banner: girl ame 13 by akiame{秋雨}
+// ![Banner](https://github.com/LuciusWellejus/LuciusWellejus/blob/main/girl_ame_13.gif?raw=true)
+// Banner: girl ame 13 by akiame{秋雨}
+
+![Banner](ascii_banner.gif)
+*Procedural ASCII Math Shader banner generated natively in Python*
 
 [![Followers](https://shields.io)](https://github.com/LuciusWellejus?tab=followers)
 [![Following](https://shields.io)](https://github.com/LuciusWellejus?tab=following)
