@@ -8,6 +8,7 @@ from math import pi
 from styles.saturn import saturn_style
 from styles.sun_signals import sun_signals_style
 from styles.boho_sun import boho_sun_style
+from styles.nuclear_reactor import nuclear_reactor_style
 
 # =====================================================================
 # CONFIGURATION & GLOBAL SETUP
@@ -93,6 +94,7 @@ def render_ascii_banner(style_function, filename):
 # =====================================================================
 if __name__ == "__main__":
     # Kør dem du vil generere (sæt '#' foran hvis du vil springe en over)
-    render_ascii_banner(saturn_style, "saturn")
-    render_ascii_banner(sun_signals_style, "sun_signals")
-    render_ascii_banner(boho_sun_style, "boho_sun")
+    # render_ascii_banner(saturn_style, "saturn")
+    # render_ascii_banner(sun_signals_style, "sun_signals")
+    # render_ascii_banner(boho_sun_style, "boho_sun")
+    render_ascii_banner(nuclear_reactor_style, "nuclear_reactor")
