@@ -4,7 +4,11 @@ LuciusWellejus/
 ├── styles/                # En ny undermappe dedikeret KUN til dine formler.
 │   ├── saturn.py          # Koden for saturn-designet
 │   ├── sun_signals.py     # Koden for sun_signals-designet
-│   └── boho_sun.py        # Koden for boho_sun-designet
+│   ├── boho_sun.py        # Koden for boho_sun-designet
+│   ├── 
+│   ├── 
+│   ├── 
+│   └── 
 │
 └── ascii_banners/         # Genereres automatisk af main.py
     └── gifs/

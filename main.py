@@ -9,6 +9,7 @@ from styles.saturn import saturn_style
 from styles.sun_signals import sun_signals_style
 from styles.boho_sun import boho_sun_style
 from styles.nuclear_reactor import nuclear_reactor_style
+from styles.bird_migration import bird_migration_style
 
 # =====================================================================
 # CONFIGURATION & GLOBAL SETUP
@@ -19,7 +20,7 @@ GIF_DIR = os.path.join(OUTPUT_DIR, "gifs")
 os.makedirs(GIF_DIR, exist_ok=True)
 
 CHAR_WIDTH, CHAR_HEIGHT = 7, 12
-COLS, ROWS = 130, 36  
+COLS, ROWS = 160, 48  # Kæmpe skærm-layout, der fylder terminalen ud!
 WIDTH, HEIGHT = COLS * CHAR_WIDTH, ROWS * CHAR_HEIGHT
 FRAMES = 90  
 
@@ -97,4 +98,5 @@ if __name__ == "__main__":
     # render_ascii_banner(saturn_style, "saturn")
     # render_ascii_banner(sun_signals_style, "sun_signals")
     # render_ascii_banner(boho_sun_style, "boho_sun")
-    render_ascii_banner(nuclear_reactor_style, "nuclear_reactor")
+    # render_ascii_banner(nuclear_reactor_style, "nuclear_reactor")
+    render_ascii_banner(bird_migration_style, "bird_migration")
