@@ -1,51 +1,36 @@
 import numpy as np
-import cv2
 from PIL import Image, ImageDraw, ImageFont
-from math import sin, cos, pi
-import subprocess
-import os
+from math import sin, pi
 
-# Setup character dimensions and grid size
-CHAR_WIDTH, CHAR_HEIGHT = 8, 14
-COLS, ROWS = 150, 42
-WIDTH = COLS * CHAR_WIDTH
-HEIGHT = ROWS * CHAR_HEIGHT
-FRAMES = 120  # Total frames for a seamless animation loop
+# 1. Configuration Constants (Optimized size for a GitHub Banner aspect ratio)
+CHAR_WIDTH, CHAR_HEIGHT = 7, 12
+COLS, ROWS = 130, 36  # Slightly shorter rows to give it a clean banner look
+WIDTH, HEIGHT = COLS * CHAR_WIDTH, ROWS * CHAR_HEIGHT
+FRAMES = 90  # 90 frames at 30 FPS gives a clean, 3-second seamless loop
 
-# Setup video writer
-video_filename = "ascii_planet.mp4"
-fourcc = cv2.VideoWriter_fourcc(*'mp4v')
-video_writer = cv2.VideoWriter(video_filename, fourcc, 30, (WIDTH, HEIGHT))
+def ss(edge0, edge1, x):
+    t = np.clip((x - edge0) / (edge1 - edge0), 0.0, 1.0)
+    return t * t * (3.0 - 2.0 * t)
 
-# Try to load a default monospace font
-try:
-    font = ImageFont.load_default()
-except Exception:
-    font = None
-
-print("Rendering animated ASCII planet video... Please wait.")
-
-for frame in range(FRAMES):
-    # t moves from 0 to 2*pi over the course of the video for a perfect loop
-    t = frame * (2 * pi / FRAMES)
-    
-    # Create blank frame canvas
+def render_frame(frame_idx):
+    t = frame_idx * (2.0 * pi / FRAMES)
     img = Image.new("RGB", (WIDTH, HEIGHT), "black")
     draw = ImageDraw.Draw(img)
+    
+    try:
+        font = ImageFont.load_default()
+    except Exception:
+        font = None
 
-    # Loop through every cell matching your original console grid
-    for y_grid in range(-21, 21):
-        for x_grid in range(-75, 75):
-            px = (x_grid + 75) * CHAR_WIDTH
-            py = (y_grid + 21) * CHAR_HEIGHT
+    for y_grid in range(-ROWS // 2, ROWS // 2):
+        for x_grid in range(-COLS // 2, COLS // 2):
+            # Calculate pixel positions
+            px = (x_grid + COLS // 2) * CHAR_WIDTH
+            py = (y_grid + ROWS // 2) * CHAR_HEIGHT
             
-            # Base grid coordinates
-            a, b = x_grid / 34, y_grid / 20
-            
-            # --- Animated Mathematics ---
+            # --- The Mathematics ---
+            a, b = x_grid / 30, y_grid / 14
             d = 1 - a * a - b * b
-            
-            # We animate the surface current lines (v) and ring waves over time
             v = (0.99 * b - 0.14 * a) / 0.22
             r = ((0.99 * a + 0.14 * b) ** 2 + v * v) ** 0.5
             
@@ -53,34 +38,42 @@ for frame in range(FRAMES):
             light = 0
             
             if ring and (d < 0 or v > 0):
-                # Adding + t makes the rings ripple outwards
                 light = 0.7 + 0.25 * sin(r * 11 - t * 2)
             elif d >= 0:
-                # Adding - t makes the planet surface texture shift/rotate
                 light = 0.3 + 0.7 * d ** 0.5 - a / 4 + sin(v * 5 + t) / 20
                 
-            # Determine character index mapping
             q = int(min(max(light, 0), 0.99) * 256)
             i = q * 10 // 256
             char_str = " .:-=+*#%@"[i]
             
-            # Match your precise amber/golden RGB balance ratios
+            # Amber styling colors
             r_color = q
             g_color = q * 85 // 100
             b_color = q * 60 // 100
             
-            # Draw individual character element
             draw.text((px, py), char_str, fill=(r_color, g_color, b_color), font=font)
+            
+    return img
 
-    # Convert PIL Image frame to OpenCV BGR array format
-    frame_np = np.array(img)
-    frame_bgr = cv2.cvtColor(frame_np, cv2.COLOR_RGB2BGR)
-    video_writer.write(frame_bgr)
+def generate_banner():
+    print("Generating animated ASCII GitHub banner structure...")
+    frames_list = []
+    
+    for f in range(FRAMES):
+        frame_img = render_frame(f)
+        frames_list.append(frame_img)
+        if f % 15 == 0:
+            print(f"Compilation status: {int(f / FRAMES * 100)}%")
+            
+    # Save directly as a lightweight looping GIF file
+    frames_list[0].save(
+        "ascii_banner.gif",
+        save_all=True,
+        append_images=frames_list[1:],
+        duration=33,  # ~30 frames per second
+        loop=0
+    )
+    print("Success! Your banner asset is saved as 'ascii_banner.gif'")
 
-# Save and release video stream
-video_writer.release()
-print(f"Animated ASCII video successfully saved as {video_filename}!")
-
-# Auto-open player execution layer
-if os.path.exists(video_filename):
-    subprocess.run(["open", video_filename])
+if __name__ == "__main__":
+    generate_banner()
