@@ -23,7 +23,7 @@ except Exception:
     FONT = None
 
 # =====================================================================
-# 2. BANNER BIBLIOTEK (Her tilføjer du nye designs i fremtiden)
+# 2. BANNER BIBLIOTEK
 # =====================================================================
 
 def saturn_gif(x_grid, y_grid, t):
@@ -43,8 +43,39 @@ def saturn_gif(x_grid, y_grid, t):
     cond_body = ~cond_ring & (d >= 0)
     light[cond_body] = 0.3 + 0.7 * (d[cond_body] ** 0.5) - (a[cond_body] / 4.0) + (np.sin(v[cond_body] * 5 + t) / 20.0)
     
-    # Returnerer lysstyrke-matrix samt RGB-farveprofil (Amber/Orange toner)
     return light, (1.0, 0.85, 0.60) 
+
+
+def sun_signals(x_grid, y_grid, t):
+    """Nyt design: Sol med takkede stråler og pulserende signalbølger/stråling."""
+    # Skaler akserne så solformen bliver cirkulær på trods af ASCII-aspektet
+    a = x_grid / 24.0
+    b = y_grid / 11.0
+    r = (a ** 2 + b ** 2) ** 0.5
+    angle = np.arctan2(b, a)
+    
+    light = np.zeros((ROWS, COLS))
+    
+    # 1. Solens kerne (Solid midte)
+    core_mask = r < 0.4
+    light[core_mask] = 0.95 + 0.05 * np.sin(t)
+    
+    # 2. Pulserende signalringe / strålingsbølger (Concentric rings)
+    signal_waves = 0.5 + 0.5 * np.sin(r * 9.0 - t * 3.0)
+    ring_mask = (r >= 0.4) & (r < 1.6)
+    light[ring_mask] = 0.25 + 0.45 * signal_waves[ring_mask]
+    
+    # 3. Takkede solstråler (Spiked rays fra billedet)
+    # 14 spidse takker hele vejen rundt om centrum
+    spikes = 0.75 + 0.25 * np.abs(np.sin(angle * 7.0))
+    ray_mask = (r >= 0.4) & (r < spikes)
+    light[ray_mask] = np.maximum(light[ray_mask], 0.4 + 0.4 * signal_waves[ray_mask])
+    
+    # Fade effekten ud jo længere væk fra solen vi kommer
+    light = light * np.clip(1.7 - r * 0.9, 0.0, 1.0)
+    
+    # Varm solgylden gul/orange farveprofil (R=100%, G=75%, B=30%)
+    return light, (1.0, 0.75, 0.30)
 
 # =====================================================================
 # 3. UNIVERSAL GRAFIK-MOTOR
@@ -68,10 +99,7 @@ def render_ascii_banner(style_function, filename):
     for f in range(FRAMES):
         t = f * (2.0 * pi / FRAMES)
         
-        # Hent logik fra den valgte funktion
         light_matrix, rgb_ratios = style_function(x_grid, y_grid, t)
-        
-        # Pak R, G og B procenterne ud af tuplen
         r_ratio, g_ratio, b_ratio = rgb_ratios
         
         q = np.clip(light_matrix, 0.0, 0.99) * 256
@@ -86,7 +114,6 @@ def render_ascii_banner(style_function, filename):
                 char_str = ascii_chars[char_indices[row, col]]
                 val = q_int[row, col]
                 
-                # RETTELSE: Udregn hver farvekanal individuelt baseret på procenterne
                 color = (
                     int(val * r_ratio), 
                     int(val * g_ratio), 
@@ -115,5 +142,6 @@ def render_ascii_banner(style_function, filename):
 # 4. AFVIKLING
 # =====================================================================
 if __name__ == "__main__":
-    # Genererer filen direkte som saturn.gif i den rigtige mappe
+    # Opretter både saturn.gif og dit nye sun_signals.gif i ét hug
     render_ascii_banner(saturn_gif, "saturn")
+    render_ascii_banner(sun_signals, "sun_signals")
