@@ -29,78 +29,57 @@ FRAMES = 90
 RENDER_FONT = ImageFont.load_default()
 
 # =====================================================================
-# RETRO 8-BIT PIXEL ART TEXT GENERATOR (Rettet rækkefølge & størrelse)
+# DYNAMISK RETRO 8-BIT BØLGE-TEKST MOTOR
 # =====================================================================
-def get_pixel_logo_mask(logo_text):
-    """Genererer en perfekt, skarp retro-maske til gridet uden slørede fonte."""
+def get_dynamic_logo_mask(logo_text, t):
+    """Genererer en knivskarp retro-maske, hvor bogstaverne bugter sig i en bølge over tid."""
     mask = np.zeros((ROWS, COLS), dtype=bool)
     if not logo_text or logo_text != "Lxirxus":
         return mask
         
-    # Håndlavet 5x5 pixel-art bitmap for hvert bogstav i "Lxirxus"
     font_map = {
-        'L': ["10000",
-              "10000",
-              "10000",
-              "10000",
-              "11111"],
-        'x': ["10001",
-              "01010",
-              "00100",
-              "01010",
-              "10001"],
-        'i': ["00100",
-              "00000",
-              "00100",
-              "00100",
-              "00100"],
-        'r': ["01110",
-              "01001",
-              "01000",
-              "01000",
-              "01000"],
-        'u': ["10001",
-              "10001",
-              "10001",
-              "10001",
-              "01110"],
-        's': ["01111",
-              "10000",
-              "01110",
-              "00001",
-              "11110"]
+        'L': ["10000", "10000", "10000", "10000", "11111"],
+        'x': ["10001", "01010", "00100", "01010", "10001"],
+        'i': ["00100", "00000", "00100", "00100", "00100"],
+        'r': ["01110", "01001", "01000", "01000", "01000"],
+        'u': ["10001", "10001", "10001", "10001", "01110"],
+        's': ["01111", "10000", "01110", "00001", "11110"]
     }
     
-    # Byg strengen i den rigtige rækkefølge fra venstre mod højre
     combined_rows = ["", "", "", "", ""]
     for char in logo_text:
         bitmap = font_map.get(char, ["00000"]*5)
         for i in range(5):
-            combined_rows[i] += bitmap[i] + "0"  # Mindre mellemrum mellem tegn (1 pixel)
+            combined_rows[i] += bitmap[i] + "0"
             
-    # Find dimensionerne af vores pixel-logo
-    text_w = len(combined_rows[0])
+    text_w = len(combined_rows)
     text_h = 5
-    
-    # Sat ned til en blødere 3x3 pixelblok pr. bit, så alt kan være på skærmen
     scale_x, scale_y = 3, 3
     
-    # Find startpositionen så teksten centreres præcist i midten af skærmen
     start_x = (COLS - (text_w * scale_x)) // 2
-    start_y = (ROWS - (text_h * scale_y)) // 2
+    # Standard midte, som vi derefter bølger ud fra
+    base_start_y = (ROWS - (text_h * scale_y)) // 2
     
-    # Tegn bogstaverne direkte ind i det binære boolean grid
-    for r_pix in range(text_h):
-        for c_pix in range(text_w):
+    for c_pix in range(text_w):
+        # NYT: Udregn en unik bølge-forskydning for hver eneste pixel-kolonne i navnet.
+        # Dette får bogstaverne til at bølge uafhængigt som en slange hen over skærmen!
+        current_global_col = start_x + c_pix * scale_x
+        wave_offset = int(5.0 * np.sin(current_global_col * 0.15 - t * 2.0))
+        
+        for r_pix in range(text_h):
             if combined_rows[r_pix][c_pix] == '1':
-                y_pos = start_y + r_pix * scale_y
-                x_pos = start_x + c_pix * scale_x
-                mask[y_pos:y_pos+scale_y, x_pos:x_pos+scale_x] = True
+                # Tilføj bølge-forskydningen til den lodrette placering
+                y_pos = base_start_y + r_pix * scale_y + wave_offset
+                x_pos = current_global_col
+                
+                # Sørg for at vi ikke tegner uden for skærmens kant
+                if 0 <= y_pos < ROWS - scale_y and 0 <= x_pos < COLS - scale_x:
+                    mask[y_pos:y_pos+scale_y, x_pos:x_pos+scale_x] = True
                 
     return mask
 
 # =====================================================================
-# UNIVERSAL RENDERING ENGINE WITH SCANLINE EFFECT
+# UNIVERSAL RENDERING ENGINE WITH WAVE OVERLAY & SCANLINE
 # =====================================================================
 def render_ascii_banner(style_function, filename, logo_text=None):
     """Kører core-computations og spytter GIF'en ud i ascii_banners/gifs/"""
@@ -114,28 +93,24 @@ def render_ascii_banner(style_function, filename, logo_text=None):
     px_coords = x_idx * CHAR_WIDTH
     py_coords = y_idx * CHAR_HEIGHT
     
-    # Hent den knivskarpe, pixelerede logo-maske
-    logo_mask = get_pixel_logo_mask(logo_text)
-    
     ascii_chars = " .:-=+*#%@"
     frames_list = []
     
     for f in range(FRAMES):
         t = f * (2.0 * pi / FRAMES)
         
-        # Hent baggrundsmateriale og RGB-værdier fra stilen
+        # NYT: Vi henter en NY, opdateret bølge-logo-maske for HVER ENESTE ramme (frame)
+        logo_mask = get_dynamic_logo_mask(logo_text, t)
+        
         light_matrix, rgb_ratios = style_function(x_grid, y_grid, t)
         r_ratio, g_ratio, b_ratio = rgb_ratios
         
         # Udregn placeringen af den lodrette scanningslinje
-        # Linjen starter i venstre side og bevæger sig glat over kolonnerne hen over tid (t)
         scan_progress = f / FRAMES
         scan_col = int(scan_progress * COLS)
-        
-        # Skab en blød glød (linjetykkelse) på 3 kolonner omkring centrum af linjen
         scan_mask = (x_idx >= scan_col - 1) & (x_idx <= scan_col + 1)
         
-        # Tving logoet helt frem i forgrunden med maksimal tegnstyrke
+        # Tving logo-bølgen helt frem i forgrunden med maksimal tegnstyrke
         if logo_text:
             light_matrix[logo_mask] = 0.99
         
@@ -151,12 +126,10 @@ def render_ascii_banner(style_function, filename, logo_text=None):
                 char_str = ascii_chars[char_indices[row, col]]
                 val = q_int[row, col]
                 
-                # Standard farveprofil fra stilen
                 r_c, g_c, b_c = r_ratio, g_ratio, b_ratio
                 
-                # Hvis scanningslinjen krydser et bogstavs-pixel, skifter det til hvidt!
+                # Hvis scanningslinjen krydser det bølgende bogstav, skifter det til hvidt
                 if logo_text and logo_mask[row, col] and scan_mask[row, col]:
-                    # Ren hvid lysstyrke (val, val, val) uafhængigt af baggrunden
                     color = (val, val, val)
                 else:
                     color = (
@@ -171,9 +144,8 @@ def render_ascii_banner(style_function, filename, logo_text=None):
 
     output_path = os.path.join(GIF_DIR, f"{filename}.gif")
     
-    # RETTELSE: listen kaldes nu korrekt via frames_list[0].save for fejlfrit output
     if frames_list:
-        frames_list[0].save(
+        frames_list.save(
             output_path, 
             save_all=True, 
             append_images=frames_list[1:], 
