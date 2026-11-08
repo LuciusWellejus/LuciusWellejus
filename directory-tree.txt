@@ -1,17 +1,20 @@
 LuciusWellejus/
 │
-├── main.py                # Grafik-motoren. Det er den, du kører fra terminalen.
-├── styles/                # En ny undermappe dedikeret KUN til dine formler.
-│   ├── saturn.py          # Koden for saturn-designet
-│   ├── sun_signals.py     # Koden for sun_signals-designet
-│   ├── boho_sun.py        # Koden for boho_sun-designet
-│   ├── 
-│   ├── 
-│   ├── 
-│   └── 
+├── main.py                # Din opgraderede grafik-motor med retro-pixel-art og scanningslinje.
 │
-└── ascii_banners/         # Genereres automatisk af main.py
-    └── gifs/
+├── styles/                # Dit personlige kode-bibliotek med alle matematiske formler.
+│   ├── saturn.py          # Koden for det klassiske Saturn-look.
+│   ├── sun_signals.py     # Koden for den pulserende sol med signalringe.
+│   ├── boho_sun.py        # Koden for Boho-solen med konturer og chokbølger (Rettet version).
+│   ├── nuclear_reactor.py # Koden for den cinematiske atomreaktor med langsom grøn røg.
+│   ├── bird_migration.py  # Koden for fuglesværmen i V-formation hen over himlen.
+│   └── cosmic_waves.py    # Koden for det enorme, fulddækkende bølge-interferensfelt.
+│
+└── ascii_banners/         # Oprettes og opdateres helt automatisk af main.py.
+    └── gifs/              # Her ligger dine visuelle, færdige animationsfiler.
         ├── saturn.gif
         ├── sun_signals.gif
-        └── boho_sun.gif
+        ├── boho_sun.gif
+        ├── nuclear_reactor.gif
+        ├── bird_migration.gif
+        └── cosmic_waves.gif
