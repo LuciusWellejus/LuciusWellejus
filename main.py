@@ -77,7 +77,7 @@ def get_dynamic_logo_mask(logo_text, t):
     return mask
 
 # =====================================================================
-# UNIVERSAL RENDERING ENGINE WITH WAVE OVERLAY & SCANLINE
+# UNIVERSAL RENDERING ENGINE WITH MULTI-COLOR & SCANLINE SUPPORT
 # =====================================================================
 def render_ascii_banner(style_function, filename, logo_text=None):
     """Kører core-computations og spytter GIF'en ud i ascii_banners/gifs/"""
@@ -99,8 +99,12 @@ def render_ascii_banner(style_function, filename, logo_text=None):
         
         logo_mask = get_dynamic_logo_mask(logo_text, t)
         
-        light_matrix, rgb_ratios = style_function(x_grid, y_grid, t)
-        r_ratio, g_ratio, b_ratio = rgb_ratios
+        light_matrix, color_data = style_function(x_grid, y_grid, t)
+        
+        # Tjek om designet returnerer et fuldt 3D RGB-farvekort eller en enkelt farve-tuple
+        is_rgb_grid = isinstance(color_data, np.ndarray) and color_data.ndim == 3
+        if not is_rgb_grid:
+            r_ratio, g_ratio, b_ratio = color_data
         
         scan_progress = f / FRAMES
         scan_col = int(scan_progress * COLS)
@@ -113,23 +117,28 @@ def render_ascii_banner(style_function, filename, logo_text=None):
         char_indices = (q * 10 // 256).astype(int)
         q_int = q.astype(int)
         
-        img = Image.new("RGB", (WIDTH, HEIGHT), "black")
+        # Mørkeblå midnatsbaggrund til juletræet, ellers sort baggrund
+        bg_color = (8, 12, 22) if is_rgb_grid else "black"
+        img = Image.new("RGB", (WIDTH, HEIGHT), bg_color)
         draw = ImageDraw.Draw(img)
         
         for row in range(ROWS):
             for col in range(COLS):
                 char_str = ascii_chars[char_indices[row, col]]
+                if char_str == " ":
+                    continue
                 val = q_int[row, col]
-                
-                r_c, g_c, b_c = r_ratio, g_ratio, b_ratio
                 
                 if logo_text and logo_mask[row, col] and scan_mask[row, col]:
                     color = (val, val, val)
+                elif is_rgb_grid:
+                    r_c, g_c, b_c = color_data[row, col]
+                    color = (int(val * r_c), int(val * g_c), int(val * b_c))
                 else:
                     color = (
-                        int(val * r_c), 
-                        int(val * g_c), 
-                        int(val * b_c)
+                        int(val * r_ratio), 
+                        int(val * g_ratio), 
+                        int(val * b_ratio)
                     )
                 
                 draw.text((px_coords[row, col], py_coords[row, col]), char_str, fill=color, font=RENDER_FONT)
