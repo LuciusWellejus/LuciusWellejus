@@ -11,6 +11,7 @@ from styles.boho_sun import boho_sun_style
 from styles.nuclear_reactor import nuclear_reactor_style
 from styles.bird_migration import bird_migration_style
 from styles.cosmic_waves import cosmic_waves_style
+from styles.christmas_tree import christmas_tree_style
 
 # =====================================================================
 # CONFIGURATION & GLOBAL SETUP
@@ -160,4 +161,5 @@ if __name__ == "__main__":
     # render_ascii_banner(boho_sun_style, "boho_sun")
     # render_ascii_banner(nuclear_reactor_style, "nuclear_reactor")
     # render_ascii_banner(bird_migration_style, "bird_migration")
-    render_ascii_banner(cosmic_waves_style, "cosmic_waves", logo_text="Lxirxus")
+    # render_ascii_banner(cosmic_waves_style, "cosmic_waves", logo_text="Lxirxus")
+    render_ascii_banner(christmas_tree_style, "christmas_tree")
